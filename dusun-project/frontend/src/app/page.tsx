@@ -18,10 +18,7 @@ export default function Home() {
 
       {/* Content */}
       <div className="relative z-10 text-center px-6 max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-1000">
-        <div className="inline-flex items-center rounded-full border border-paddy/30 bg-forest/40 px-4 py-1.5 text-sm font-medium text-paddy backdrop-blur-md mb-4 shadow-lg">
-          <span className="flex h-2.5 w-2.5 rounded-full bg-paddy mr-2.5 animate-ping"></span>
-          Portal Resmi Dusun Karangasem Kulon
-        </div>
+        
         
         <h1 className="font-display text-5xl md:text-7xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-br from-rice to-paddy/80 drop-shadow-sm">
           Dusun Karangasem Kulon

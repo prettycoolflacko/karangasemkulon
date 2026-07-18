@@ -24,16 +24,19 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: https://karangasemkulon.anirveda.rocks
     container_name: dusun-frontend
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "3003:3000"
     volumes:
       # Menggunakan Bind Mount: Menghubungkan langsung ke folder lokal frontend
       - ./frontend/public/images:/app/public/images
     environment:
       # Tell frontend where to reach backend for API calls (via browser)
       # WARNING: Change this IP to the actual IP address of your home server!
-      - NEXT_PUBLIC_API_URL=http://localhost:8000
+      - NEXT_PUBLIC_API_URL=https://karangasemkulon.anirveda.rocks
+      - HOSTNAME=0.0.0.0
     depends_on:
       - backend

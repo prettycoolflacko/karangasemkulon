@@ -7,8 +7,9 @@ FROM node:18-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-# For build, we might not need the actual API URL, but good to have a placeholder
-ENV NEXT_PUBLIC_API_URL=http://localhost:8000
+# API URL — overridden at build time via docker-compose build args
+ARG NEXT_PUBLIC_API_URL=http://localhost:8000
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 RUN npm run build
 
 FROM node:18-alpine AS runner

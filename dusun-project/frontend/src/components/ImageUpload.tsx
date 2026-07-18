@@ -33,8 +33,9 @@ export default function ImageUpload({ folder, currentImageUrl, onUploadSuccess }
       formData.append("folder", folder);
 
       const token = localStorage.getItem("admin_token") || "";
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
-      const res = await fetch("/api/upload", {
+      const res = await fetch(`${apiUrl}/api/upload`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

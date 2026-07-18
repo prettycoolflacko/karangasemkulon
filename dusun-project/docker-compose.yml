@@ -7,8 +7,6 @@ services:
       dockerfile: Dockerfile
     container_name: dusun-backend
     restart: unless-stopped
-    ports:
-      - "8000:8000"
     volumes:
       # Menggunakan Bind Mount: Container akan langsung membaca/menulis ke file ini
       - ./backend/dusun.db:/app/dusun.db
@@ -28,15 +26,28 @@ services:
         NEXT_PUBLIC_API_URL: https://karangasemkulon.anirveda.rocks
     container_name: dusun-frontend
     restart: unless-stopped
-    ports:
-      - "3003:3000"
     volumes:
       # Menggunakan Bind Mount: Menghubungkan langsung ke folder lokal frontend
       - ./frontend/public/images:/app/public/images
     environment:
-      # Tell frontend where to reach backend for API calls (via browser)
-      # WARNING: Change this IP to the actual IP address of your home server!
       - NEXT_PUBLIC_API_URL=https://karangasemkulon.anirveda.rocks
       - HOSTNAME=0.0.0.0
     depends_on:
       - backend
+
+  # Nginx: Gateway terpusat yang melayani gambar LANGSUNG dari disk
+  # Ini memastikan gambar yang baru diupload langsung tampil tanpa rebuild
+  nginx:
+    image: nginx:alpine
+    container_name: dusun-nginx
+    restart: unless-stopped
+    ports:
+      - "3003:80"
+    volumes:
+      # File konfigurasi Nginx
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      # Folder gambar di-mount LANGSUNG — bypass Next.js sepenuhnya
+      - ./frontend/public/images:/data/images:ro
+    depends_on:
+      - backend
+      - frontend

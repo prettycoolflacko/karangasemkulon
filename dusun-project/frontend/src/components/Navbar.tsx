@@ -3,8 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { ChevronDown, Lock } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { ChevronDown } from "lucide-react";
 
 const mainLinks = [
   { href: "/about", label: "Tentang" },
@@ -23,16 +22,16 @@ const kknLinks = [
 
 export default function Navbar() {
   const [isAdmin, setIsAdmin] = useState(false);
-  const pathname = usePathname();
 
   useEffect(() => {
     // Hanya periksa token admin jika di browser
-    // Dan periksa ulang setiap kali halaman berubah (login/logout)
     if (typeof window !== "undefined") {
       const token = localStorage.getItem("admin_token");
-      setIsAdmin(!!token);
+      if (token) {
+        setIsAdmin(true);
+      }
     }
-  }, [pathname]);
+  }, []);
 
   return (
     <nav className="sticky top-0 z-50 flex flex-wrap items-center justify-between gap-4 px-6 py-4 bg-rice/80 backdrop-blur-md border-b border-forest/10 shadow-sm text-forest">
@@ -71,13 +70,9 @@ export default function Navbar() {
           </div>
         </div>
 
-        {isAdmin ? (
+        {isAdmin && (
           <Link href="/admin/dashboard" className="ml-2 px-4 py-2 bg-shallot text-rice text-sm font-bold rounded-full shadow-md hover:bg-[#743051] transition-colors">
             Admin Panel
-          </Link>
-        ) : (
-          <Link href="/admin/login" className="ml-2 p-2 text-forest/40 hover:text-shallot transition-colors rounded-full hover:bg-forest/5" title="Login Admin">
-            <Lock className="w-4 h-4" />
           </Link>
         )}
       </div>

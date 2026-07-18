@@ -19,7 +19,7 @@ export default async function BeritaDetailPage({ params }: { params: Promise<{ s
   }
 
   // Format date
-  const dateObj = newsItem.published_at || newsItem.created_at;
+  const dateObj = newsItem.published_at;
   const formattedDate = dateObj 
     ? new Date(dateObj).toLocaleDateString("id-ID", {
         day: "numeric",

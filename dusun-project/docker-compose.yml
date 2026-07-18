@@ -31,6 +31,8 @@ services:
       - ./frontend/public/images:/app/public/images
     environment:
       - NEXT_PUBLIC_API_URL=https://karangasemkulon.anirveda.rocks
+      # URL internal Docker agar SSR tidak perlu keluar ke internet
+      - INTERNAL_API_URL=http://backend:8000
       - HOSTNAME=0.0.0.0
     depends_on:
       - backend

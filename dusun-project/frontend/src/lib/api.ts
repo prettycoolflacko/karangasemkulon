@@ -1,4 +1,14 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+// URL untuk browser (client-side) — menggunakan domain publik
+const CLIENT_API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
+// URL untuk Next.js SSR (server-side) — menggunakan nama service Docker internal
+// Ini menghindari request yang keluar ke internet lalu balik lagi saat SSR
+const SERVER_API_URL = process.env.INTERNAL_API_URL || CLIENT_API_URL;
+
+function getApiBaseUrl() {
+  // typeof window === "undefined" artinya kode berjalan di server (SSR/ISR)
+  return typeof window === "undefined" ? SERVER_API_URL : CLIENT_API_URL;
+}
 
 interface FetchOptions extends RequestInit {
   token?: string;
@@ -7,7 +17,7 @@ interface FetchOptions extends RequestInit {
 export async function apiFetch<T>(path: string, options: FetchOptions = {}): Promise<T> {
   const { token, headers, ...rest } = options;
 
-  const res = await fetch(`${API_BASE_URL}${path}`, {
+  const res = await fetch(`${getApiBaseUrl()}${path}`, {
     ...rest,
     headers: {
       "Content-Type": "application/json",

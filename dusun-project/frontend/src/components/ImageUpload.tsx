@@ -49,6 +49,24 @@ export default function ImageUpload({ folder, currentImageUrl, onUploadSuccess }
       }
 
       const data = await res.json();
+      
+      // Hapus gambar lama jika ada dan merupakan gambar dari server (bukan blob lokal)
+      // Ini menghemat ruang penyimpanan server.
+      if (preview && preview.startsWith("/images/") && preview !== data.url) {
+        try {
+          await fetch(`${apiUrl}/api/upload`, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ url: preview }),
+          });
+        } catch (e) {
+          console.error("Gagal menghapus gambar lama:", e);
+        }
+      }
+
       onUploadSuccess(data.url);
       setPreview(data.url); // update preview dengan path asli
     } catch (error: any) {

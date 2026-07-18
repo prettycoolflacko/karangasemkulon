@@ -1,5 +1,6 @@
 import os
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Depends
+from pydantic import BaseModel
 from uuid import uuid4
 from PIL import Image
 import io
@@ -62,3 +63,33 @@ async def upload_image(
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Gagal memproses gambar: {str(e)}")
+
+class DeleteImageRequest(BaseModel):
+    url: str
+
+@router.delete("/upload")
+async def delete_image(
+    payload: DeleteImageRequest,
+    current_user=Depends(get_current_user)
+):
+    if not payload.url.startswith("/images/"):
+        raise HTTPException(status_code=400, detail="URL gambar tidak valid")
+        
+    # Extract relative path (e.g., /images/berita/123.webp -> berita/123.webp)
+    relative_path = payload.url.replace("/images/", "")
+    
+    # Path lengkap file yang akan dihapus
+    file_path = os.path.join(FRONTEND_IMAGES_DIR, relative_path)
+    
+    # Prevent directory traversal
+    if not os.path.abspath(file_path).startswith(os.path.abspath(FRONTEND_IMAGES_DIR)):
+        raise HTTPException(status_code=400, detail="Path tidak valid")
+        
+    try:
+        if os.path.exists(file_path):
+            os.remove(file_path)
+            return {"ok": True, "detail": "Gambar berhasil dihapus"}
+        else:
+            return {"ok": False, "detail": "Gambar tidak ditemukan"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Gagal menghapus gambar: {str(e)}")

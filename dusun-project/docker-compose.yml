@@ -10,16 +10,14 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      # Mount database
-      - dusun-db:/app/data
-      # Mount shared images folder
-      - dusun-images:/shared-images
+      # Menggunakan Bind Mount: Container akan langsung membaca/menulis ke file ini
+      - ./backend/dusun.db:/app/dusun.db
+      # Menggunakan Bind Mount untuk folder gambar
+      - ./frontend/public/images:/shared-images
     environment:
-      # Inform backend to save DB in the mounted volume
-      - DATABASE_URL=sqlite:////app/data/dusun.db
-      # Inform backend to save images to the shared volume
+      # Arahkan backend ke database yang sudah ter-mount
+      - DATABASE_URL=sqlite:////app/dusun.db
       - IMAGE_STORAGE_PATH=/shared-images
-      # Production mode settings (optional)
       - ENVIRONMENT=production
 
   frontend:
@@ -31,15 +29,11 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      # Mount shared images folder to Next.js public directory
-      - dusun-images:/app/public/images
+      # Menggunakan Bind Mount: Menghubungkan langsung ke folder lokal frontend
+      - ./frontend/public/images:/app/public/images
     environment:
       # Tell frontend where to reach backend for API calls (via browser)
       # WARNING: Change this IP to the actual IP address of your home server!
       - NEXT_PUBLIC_API_URL=http://localhost:8000
     depends_on:
       - backend
-
-volumes:
-  dusun-db:
-  dusun-images:

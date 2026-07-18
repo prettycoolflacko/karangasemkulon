@@ -1,0 +1,63 @@
+import os
+from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Depends
+from uuid import uuid4
+from PIL import Image
+import io
+from app.auth import get_current_user
+
+router = APIRouter()
+
+# Resolve path to frontend/public/images
+# backend/app/routers/upload.py -> backend/app/routers -> backend/app -> backend -> root
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+PROJECT_ROOT = os.path.dirname(BASE_DIR)
+FRONTEND_IMAGES_DIR = os.path.join(PROJECT_ROOT, "frontend", "public", "images")
+
+ALLOWED_FOLDERS = ["berita", "galeri", "tim", "perangkat", "logo", "lainnya"]
+
+@router.post("/upload")
+async def upload_image(
+    file: UploadFile = File(...),
+    folder: str = Form(...),
+    current_user=Depends(get_current_user)
+):
+    if folder not in ALLOWED_FOLDERS:
+        folder = "lainnya"
+        
+    if not file.content_type.startswith("image/"):
+        raise HTTPException(status_code=400, detail="File yang diunggah harus berupa gambar")
+
+    try:
+        # Baca konten file
+        contents = await file.read()
+        
+        # Buka gambar menggunakan Pillow
+        image = Image.open(io.BytesIO(contents))
+        
+        # Konversi ke RGB jika formatnya RGBA (kecuali PNG transparan, WebP mendukung RGBA)
+        # WebP mendukung transparansi, jadi kita bisa simpan as is.
+        # Jika gambar adalah P atau LA, konversi ke RGBA agar aman.
+        if image.mode not in ("RGB", "RGBA"):
+            image = image.convert("RGBA")
+            
+        # Hasilkan nama file unik dengan ekstensi .webp
+        filename = f"{uuid4().hex}.webp"
+        
+        # Tentukan folder target
+        target_folder = os.path.join(FRONTEND_IMAGES_DIR, folder)
+        os.makedirs(target_folder, exist_ok=True)
+        
+        # Path lengkap file tujuan
+        file_path = os.path.join(target_folder, filename)
+        
+        # Simpan sebagai webp
+        # quality=80 cukup bagus untuk web dan ukuran kecil
+        image.save(file_path, "webp", quality=80)
+        
+        # Kembalikan path relatif untuk digunakan di frontend
+        public_url = f"/images/{folder}/{filename}"
+        
+        return {"url": public_url}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Gagal memproses gambar: {str(e)}")

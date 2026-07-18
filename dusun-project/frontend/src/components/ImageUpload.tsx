@@ -44,8 +44,22 @@ export default function ImageUpload({ folder, currentImageUrl, onUploadSuccess }
       });
 
       if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.detail || "Upload gagal");
+        let errorMessage = "Upload gagal";
+        try {
+          const errorData = await res.json();
+          errorMessage = errorData.detail || errorMessage;
+        } catch (e) {
+          const textError = await res.text().catch(() => "");
+          if (res.status === 413) {
+            errorMessage = "Ukuran file terlalu besar (Max 1MB). Silakan hubungi admin server (Nginx).";
+          } else if (res.status === 500) {
+            errorMessage = "Server Error (500). Apakah python-multipart terinstall? Atau masalah izin folder (chmod).";
+          } else {
+            errorMessage = `Error HTTP ${res.status}. Cek console.`;
+            console.error("Non-JSON error:", textError);
+          }
+        }
+        throw new Error(errorMessage);
       }
 
       const data = await res.json();

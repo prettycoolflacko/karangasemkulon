@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: dusun-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      # Mount database
+      - dusun-db:/app/data
+      # Mount shared images folder
+      - dusun-images:/shared-images
+    environment:
+      # Inform backend to save DB in the mounted volume
+      - DATABASE_URL=sqlite:////app/data/dusun.db
+      # Inform backend to save images to the shared volume
+      - IMAGE_STORAGE_PATH=/shared-images
+      # Production mode settings (optional)
+      - ENVIRONMENT=production
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: dusun-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      # Mount shared images folder to Next.js public directory
+      - dusun-images:/app/public/images
+    environment:
+      # Tell frontend where to reach backend for API calls (via browser)
+      # WARNING: Change this IP to the actual IP address of your home server!
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    depends_on:
+      - backend
+
+volumes:
+  dusun-db:
+  dusun-images:

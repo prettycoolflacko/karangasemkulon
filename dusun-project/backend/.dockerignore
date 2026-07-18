@@ -1,0 +1,7 @@
+venv
+__pycache__
+*.pyc
+dusun.db
+.git
+.DS_Store
+.env

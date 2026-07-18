@@ -8,10 +8,11 @@ from app.auth import get_current_user
 router = APIRouter()
 
 # Resolve path to frontend/public/images
-# backend/app/routers/upload.py -> backend/app/routers -> backend/app -> backend -> root
+# If running in Docker, we will mount a volume to a specific path and set IMAGE_STORAGE_PATH
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 PROJECT_ROOT = os.path.dirname(BASE_DIR)
-FRONTEND_IMAGES_DIR = os.path.join(PROJECT_ROOT, "frontend", "public", "images")
+DEFAULT_LOCAL_PATH = os.path.join(PROJECT_ROOT, "frontend", "public", "images")
+FRONTEND_IMAGES_DIR = os.getenv("IMAGE_STORAGE_PATH", DEFAULT_LOCAL_PATH)
 
 ALLOWED_FOLDERS = ["berita", "galeri", "tim", "perangkat", "logo", "lainnya"]
 

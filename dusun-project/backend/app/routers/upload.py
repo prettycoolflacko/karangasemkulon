@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from uuid import uuid4
 from PIL import Image
 import io
-from app.auth import get_current_user
+from ..auth import get_current_user
 
 router = APIRouter()
 

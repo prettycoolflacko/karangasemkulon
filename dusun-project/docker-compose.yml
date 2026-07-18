@@ -7,6 +7,8 @@ services:
       dockerfile: Dockerfile
     container_name: dusun-backend
     restart: unless-stopped
+    ports:
+      - "8000:8000"
     volumes:
       # Menggunakan Bind Mount: Container akan langsung membaca/menulis ke file ini
       - ./backend/dusun.db:/app/dusun.db

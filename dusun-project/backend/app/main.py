@@ -23,7 +23,7 @@ app = FastAPI(title="Dusun Profile Website API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # add production frontend URL when deployed
+    allow_origins=["*"],  # Allow all origins for easier home server deployment
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -170,3 +170,14 @@ class LocationCreate(LocationBase):
 class LocationOut(LocationBase):
     model_config = ConfigDict(from_attributes=True)
     id: int
+
+
+# ---------- Site Settings ----------
+class SettingOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    key: str
+    value: Optional[str] = None
+
+
+class SettingUpdate(BaseModel):
+    value: Optional[str] = None

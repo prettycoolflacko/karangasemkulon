@@ -14,6 +14,7 @@ from .routers import (
     timeline,
     locations,
     upload,
+    settings,
 )
 
 # Creates tables if they don't exist yet. For real migrations, swap in Alembic later.
@@ -39,6 +40,7 @@ app.include_router(team.router)
 app.include_router(timeline.router)
 app.include_router(locations.router)  # optional map feature
 app.include_router(upload.router, prefix="/api", tags=["Upload"])
+app.include_router(settings.router)
 
 
 @app.get("/api/health")

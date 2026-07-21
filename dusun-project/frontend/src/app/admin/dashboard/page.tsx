@@ -12,6 +12,7 @@ const sections = [
   { href: "/admin/tim", label: "Tim KKN" },
   { href: "/admin/proker", label: "Timeline Proker" },
   { href: "/admin/peta", label: "Titik Peta" },
+  { href: "/admin/pengaturan", label: "⚙️ Pengaturan Footer" },
 ];
 
 export default function AdminDashboardPage() {

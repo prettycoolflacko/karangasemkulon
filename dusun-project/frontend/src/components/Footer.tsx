@@ -1,8 +1,28 @@
 import Image from "next/image";
+import { apiFetch } from "@/lib/api";
+import { Setting } from "@/types";
 
-// Real content migrated from the old vanilla site's footer.
-// TODO: ganti email/nomor telepon placeholder dengan yang asli.
-export default function Footer() {
+// Helper: ambil nilai setting dari array berdasarkan key
+function getSetting(settings: Setting[], key: string, fallback = ""): string {
+  return settings.find((s) => s.key === key)?.value ?? fallback;
+}
+
+export default async function Footer() {
+  let settings: Setting[] = [];
+  try {
+    settings = await apiFetch<Setting[]>("/api/settings");
+  } catch {
+    // Jika gagal, gunakan nilai default
+  }
+
+  const email = getSetting(settings, "contact_email", "email.kkn@placeholder.com");
+  const phone = getSetting(settings, "contact_phone", "+62 812-3456-7890");
+  const address = getSetting(settings, "address", "Sekretariat Dusun / Balai Desa, Karangasem Kulon, Kulon Progo, DIY");
+  const igUrl = getSetting(settings, "instagram_url", "https://instagram.com/karangasemkulon");
+  const igHandle = getSetting(settings, "instagram_handle", "@karangasemkulon");
+  const ttUrl = getSetting(settings, "tiktok_url", "https://tiktok.com/@kkn.karangasemkulon");
+  const ttHandle = getSetting(settings, "tiktok_handle", "@kkn.karangasemkulon");
+
   return (
     <footer className="px-6 py-12 bg-forest text-rice/80 border-t border-forest/20 relative overflow-hidden">
       {/* Footer Watermark */}
@@ -16,33 +36,39 @@ export default function Footer() {
           </p>
           <div className="flex items-center gap-3 pt-2">
             <Image src="/images/logo/logo-upn.webp" alt="Logo UPN Veteran Yogyakarta" width={40} height={40} className="opacity-70" />
-            <span className="text-xs text-rice/60">Didukung oleh KKN UPN "Veteran" YK 2026</span>
+            <span className="text-xs text-rice/60">Didukung oleh KKN UPN &quot;Veteran&quot; YK 2026</span>
           </div>
         </div>
 
         <div className="space-y-3">
           <h3 className="font-display text-xl font-bold text-rice mb-4">Hubungi Kami</h3>
           <p className="flex items-start gap-2">
-            <span className="text-paddy">📍</span> Sekretariat Dusun / Balai Desa,<br/>Karangasem Kulon, Kulon Progo, DIY
+            <span className="text-paddy">📍</span> {address}
           </p>
-          <p className="flex items-center gap-2">
-            <span className="text-paddy">✉️</span> email.kkn@placeholder.com
-          </p>
-          <p className="flex items-center gap-2">
-            <span className="text-paddy">📱</span> +62 812-3456-7890 (Placeholder)
-          </p>
+          {email && (
+            <p className="flex items-center gap-2">
+              <span className="text-paddy">✉️</span>
+              <a href={`mailto:${email}`} className="hover:text-paddy transition-colors">{email}</a>
+            </p>
+          )}
+          {phone && phone !== "+62 812-3456-7890" && (
+            <p className="flex items-center gap-2">
+              <span className="text-paddy">📱</span>
+              <a href={`tel:${phone}`} className="hover:text-paddy transition-colors">{phone}</a>
+            </p>
+          )}
         </div>
 
         <div className="space-y-3">
           <h3 className="font-display text-xl font-bold text-rice mb-4">Media Sosial</h3>
           <p>
-            <a href="https://instagram.com/karangasemkulon" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-paddy transition-colors">
-              <span className="text-shallot">📸</span> Instagram @karangasemkulon
+            <a href={igUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-paddy transition-colors">
+              <span className="text-shallot">📸</span> Instagram {igHandle}
             </a>
           </p>
           <p>
-            <a href="https://tiktok.com/@kkn.karangasemkulon" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-paddy transition-colors">
-              <span className="text-shallot">🎵</span> TikTok @kkn.karangasemkulon
+            <a href={ttUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-paddy transition-colors">
+              <span className="text-shallot">🎵</span> TikTok {ttHandle}
             </a>
           </p>
         </div>

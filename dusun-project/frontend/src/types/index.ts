@@ -67,3 +67,8 @@ export interface LocationPoint {
   description?: string | null;
   icon?: string | null;
 }
+
+export interface Setting {
+  key: string;
+  value?: string | null;
+}
